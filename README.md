@@ -18,7 +18,7 @@ CIFAR-10 contains 60,000 32×32 RGB images across 10 classes.
 
 The current baseline is a small ResNet-style CNN trained on CIFAR-10.
 
-The model uses residual blocks with Batch Normalization and ReLU activations, followed by global average pooling, dropout, and a final linear classifier. :chatgpt-content-reference{index="0"}
+The model uses residual blocks with Batch Normalization and ReLU activations, followed by global average pooling, dropout, and a final linear classifier.
 
 ### Baseline training setup
 
@@ -30,7 +30,7 @@ The model uses residual blocks with Batch Normalization and ReLU activations, fo
 - Batch size: 64
 - Model selection: best validation accuracy
 
-The training pipeline saves the checkpoint with the best validation performance rather than simply keeping the final epoch. :chatgpt-content-reference{index="1"} :chatgpt-content-reference{index="2"}
+The training pipeline saves the checkpoint with the best validation performance rather than simply keeping the final epoch.
 
 ### Baseline result
 
