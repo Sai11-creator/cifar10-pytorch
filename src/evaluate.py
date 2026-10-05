@@ -16,9 +16,7 @@ print("Using device:", device)
 model = MiniResNet().to(device)
 
 
-model.load_state_dict(
-    torch.load("best_model.pth")
-)
+model.load_state_dict(torch.load("best_model.pth"))
 test_dataset, test_loader = get_test_loader(batch_size=64)
 
 
@@ -55,11 +53,15 @@ correct = confusion_matrix.diag().sum().item()
 total = confusion_matrix.sum().item()
 
 test_accuracy = 100 * correct / total
+
+normalized_confusion_matrix = (
+    confusion_matrix.float()
+    / confusion_matrix.sum(dim=1, keepdim=True)
+)
+
+
 print(f"Test accuracy: {test_accuracy:.2f}%")
-
-
 plt.figure(figsize=(10, 8))
-
 plt.imshow(confusion_matrix)
 
 plt.xticks(
@@ -79,10 +81,6 @@ plt.title("Confusion Matrix")
 
 plt.colorbar()
 
-normalized_confusion_matrix = (
-    confusion_matrix.float()
-    / confusion_matrix.sum(dim=1, keepdim=True)
-)
 
 plt.tight_layout()
 for i in range(num_classes):

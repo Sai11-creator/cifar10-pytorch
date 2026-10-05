@@ -25,9 +25,6 @@ def get_test_transform():
         )
     ])
     
-
-
-
 def get_train_val_loader(batch_size=64):
     transform = get_train_transform()
     train_full_dataset = datasets.CIFAR10(

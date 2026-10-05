@@ -12,8 +12,6 @@ device = torch.device(
     else "cpu"
 )
 
-print("Using device:", device)
-
 model = MiniResNet().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(
@@ -112,9 +110,8 @@ for epoch in range(num_epochs):
         f"LR: {current_lr:.6f}"
         )
  
-
-
-
+ 
+ 
 torch.save(model.state_dict(), "model.pth")
 
 epochs = range(1, num_epochs + 1)
