@@ -30,7 +30,7 @@ These models differ in depth, residual blocks, pooling and classifier structure,
 
 ## Training setup
 
-The final MiniResNet configuration uses Adam (`lr=1e-3`, `weight_decay=1e-4`), `CosineAnnealingLR`, 50 epochs and batch size 64. Cross-entropy is the training loss. The training loop tracks validation accuracy and saves an improving checkpoint as `best_model.pth`. It also writes the final epoch as `best_model_seed{seed}.pth`; the evaluation script loads this per-seed file. The reported test results therefore correspond to those per-seed checkpoints. The test set is not used for model selection.
+The final MiniResNet configuration uses Adam (`lr=1e-3`, `weight_decay=1e-4`), `CosineAnnealingLR`, 50 epochs and batch size 64. Cross-entropy is the training loss. The training loop tracks validation accuracy and saves both `best_model.pth` and the per-seed checkpoint `best_model_seed{seed}.pth` whenever validation accuracy improves. The evaluation script loads the per-seed file, so the reported test results correspond to the best-validation checkpoint for each seed. The test set is not used for model selection.
 
 ## Experimental methodology
 
@@ -95,8 +95,6 @@ The normalized confusion matrices show cat and dog as the hardest pair: about 8%
 │   ├── model.py         # SimpleCNN, ResidualBlock and MiniResNet
 │   ├── train.py         # Seeded training, validation and checkpointing
 │   └── evaluate.py      # Test evaluation and confusion matrix
-├── train_*.sbatch       # SLURM training jobs for seeds 42, 123 and 456
-├── evaluate_*.sbatch    # SLURM evaluation jobs for the three seeds
 ├── accuracy*.png        # Saved training curves, including optimizer comparison
 └── confusion_matrix_seed*.png
 ```
@@ -112,7 +110,7 @@ python src/train.py --seed 42
 python src/evaluate.py --seed 42
 ```
 
-Repeat with `--seed 123` or `--seed 456` for the reported multi-seed runs. Training writes `best_model.pth`, `best_model_seed{seed}.pth` and `accuracy.png`; evaluation reads the per-seed checkpoint and writes `confusion_matrix_seed{seed}.png`. SLURM examples are provided in the corresponding `.sbatch` files.
+Repeat with `--seed 123` or `--seed 456` for the reported multi-seed runs. Training writes `best_model.pth`, `best_model_seed{seed}.pth` and `accuracy.png`; evaluation reads the per-seed checkpoint and writes `confusion_matrix_seed{seed}.png`.
 
 ## Conclusion
 
