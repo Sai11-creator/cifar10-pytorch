@@ -1,10 +1,22 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from dataset import get_train_val_loader, get_test_loader
-from model import MiniResNet
+from model import MiniResNet, SimpleCNN
+import argparse
+
+num_epochs = 50
+parser = argparse.ArgumentParser()
+parser.add_argument("--seed", type=int, default=42)
+args = parser.parse_args()
+torch.manual_seed(args.seed)
+
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(args.seed)
 
 device = torch.device(
     "cuda" if torch.cuda.is_available()
@@ -14,16 +26,12 @@ device = torch.device(
 
 model = MiniResNet().to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(
-    model.parameters(),
-    lr=0.001,
-    weight_decay=1e-4
-)
+optimizer = optim.Adam(model.parameters(),lr = 0.001,weight_decay = 1e-4)
 
-scheduler = optim.lr_scheduler.StepLR(
+
+scheduler = optim.lr_scheduler.CosineAnnealingLR(
     optimizer=optimizer,
-    step_size = 5,
-    gamma=0.5
+    T_max = num_epochs
 )
 
 def evaluate(model, loader):
@@ -57,7 +65,7 @@ model.train()
 train_losses = []
 train_accuracies = []
 val_accuracies = []
-num_epochs = 15
+
 
 best_accuracy = 0.0
 
@@ -112,14 +120,18 @@ for epoch in range(num_epochs):
  
  
  
-torch.save(model.state_dict(), "model.pth")
+torch.save(
+    model.state_dict(),
+    f"best_model_seed{args.seed}.pth"
+)
 
 epochs = range(1, num_epochs + 1)
-
+print("Best validation accuracy:", max(val_accuracies))
 plt.plot(epochs, train_accuracies, label="Train")
 plt.plot(epochs, val_accuracies, label="Validation")
 
 plt.xlabel("Epoch")
 plt.ylabel("Accuracy (%)")
 plt.legend()
-plt.show()
+plt.savefig(f"accuracy.png", dpi=150, bbox_inches="tight")
+plt.close()

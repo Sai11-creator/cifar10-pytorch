@@ -60,7 +60,7 @@ class ResidualBlock(nn.Module):
 
 
 
-'''
+
 class SimpleCNN(nn.Module):
     def __init__(self):
         super().__init__()
@@ -77,7 +77,6 @@ class SimpleCNN(nn.Module):
         self.fc1 = nn.Linear(128*4*4,256)
         self.fc2 = nn.Linear(256,10)
         self.dropout = nn.Dropout(p=0.2)
-        self.res1 = ResidualBlock(64)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -89,8 +88,6 @@ class SimpleCNN(nn.Module):
         x = self.bn2(x)
         x = self.relu(x)
         x = self.pool(x)
-        
-        x = self.res1(x)
         
         x = self.conv3(x)
         x = self.bn3(x)
@@ -106,7 +103,7 @@ class SimpleCNN(nn.Module):
         x = self.fc2(x)
 
         return x
-   '''
+
    
 class MiniResNet(nn.Module):
     def __init__(self, num_classes=10):

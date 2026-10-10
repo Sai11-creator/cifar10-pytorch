@@ -14,7 +14,8 @@ def get_train_transform():
         transforms.Normalize (
             mean=(0.4914, 0.4822, 0.4465),
             std=(0.2470, 0.2435, 0.2616)
-        )
+        ),
+        transforms.RandomErasing(p=0.25)
     ])
 def get_test_transform():
     return transforms.Compose([
@@ -52,12 +53,16 @@ def get_train_val_loader(batch_size=64):
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
-        shuffle=True
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True
     )
     val_loader=DataLoader(
         val_dataset,
         batch_size=batch_size,
-        shuffle=False
+        shuffle=False,
+        num_workers=4,
+        pin_memory=True
     )
 
     return train_loader,train_dataset,val_loader
@@ -76,7 +81,9 @@ def get_test_loader(batch_size=64):
     test_loader = DataLoader(
         test_dataset,
         batch_size=batch_size,
-        shuffle=False
+        shuffle=False,
+        num_workers=4,
+        pin_memory=True
     )
 
     return test_dataset, test_loader
