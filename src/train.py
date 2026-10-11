@@ -68,6 +68,22 @@ def train(seed, num_epochs=50):
             torch.save(model.state_dict(), checkpoint)
             torch.save(model.state_dict(), "best_model.pth")
 
+        # Keep the latest completed epoch separate from best-validation weights.
+        torch.save(
+            {
+                "epoch": epoch + 1,
+                "seed": seed,
+                "num_epochs": num_epochs,
+                "model_state_dict": model.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "scheduler_state_dict": scheduler.state_dict(),
+                "best_accuracy": best_accuracy,
+                "train_accuracies": train_accuracies,
+                "val_accuracies": val_accuracies,
+            },
+            f"last_checkpoint_seed{seed}.pth",
+        )
+
         print(
             f"Epoch {epoch + 1}/{num_epochs} | Loss: {average_loss:.4f} | "
             f"Train Acc: {train_accuracy:.2f}% | Val Acc: {val_accuracy:.2f}% | "

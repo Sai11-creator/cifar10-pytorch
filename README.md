@@ -32,6 +32,13 @@ These models differ in depth, residual blocks, pooling and classifier structure,
 
 The final MiniResNet configuration uses Adam (`lr=1e-3`, `weight_decay=1e-4`), `CosineAnnealingLR`, 50 epochs and batch size 64. Cross-entropy is the training loss. The training loop tracks validation accuracy and saves both `best_model.pth` and the per-seed checkpoint `best_model_seed{seed}.pth` whenever validation accuracy improves. The evaluation script loads the per-seed file, so the reported test results correspond to the best-validation checkpoint for each seed. The test set is not used for model selection.
 
+### Checkpoint purposes
+
+- `best_model_seed{seed}.pth` contains only the model weights selected by validation accuracy. `src/evaluate.py` explicitly loads this file for test evaluation; `best_model.pth` is a convenience copy for the most recently improved run.
+- `last_checkpoint_seed{seed}.pth` is overwritten after each completed epoch, after the scheduler step and validation. It stores the latest model, optimizer and scheduler state dictionaries, the completed epoch count (`epoch`), seed, planned training duration (`num_epochs`), best validation accuracy and accuracy histories. It is intended for continuing training, rather than selecting the model for final test evaluation.
+
+There is currently no automatic resume command. To continue training manually, restore all three state dictionaries into the same model, optimizer and scheduler configuration, restore `best_accuracy` and the histories, and continue from `range(checkpoint["epoch"], checkpoint["num_epochs"])`. Keep the existing best-model files so that a resumed run retains its earlier best checkpoint. Call `model.train()` before training the next epoch. Random-number-generator and data-loader states are not saved, so continuation is not guaranteed to reproduce an uninterrupted run exactly. Only fully completed epochs are recorded.
+
 ## Experimental methodology
 
 The experiments compare models and training choices while holding the fixed train/validation split and evaluation process constant. Multi-seed runs use seeds 42, 123 and 456. Validation results guide configuration choices; final test results are reported separately.
@@ -110,7 +117,7 @@ python src/train.py --seed 42
 python src/evaluate.py --seed 42
 ```
 
-Repeat with `--seed 123` or `--seed 456` for the reported multi-seed runs. Training writes `best_model.pth`, `best_model_seed{seed}.pth` and `accuracy.png`; evaluation reads the per-seed checkpoint and writes `confusion_matrix_seed{seed}.png`.
+Repeat with `--seed 123` or `--seed 456` for the reported multi-seed runs. Training writes `best_model.pth`, `best_model_seed{seed}.pth`, `last_checkpoint_seed{seed}.pth` and `accuracy.png`; evaluation reads `best_model_seed{seed}.pth` and writes `confusion_matrix_seed{seed}.png`.
 
 ## Conclusion
 
